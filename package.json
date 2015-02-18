@@ -1,0 +1,36 @@
+{
+  "name": "parry",
+  "description": "A loose coupling and structural Node.js validation module",
+  "version": "0.0.0",
+  "author": "kjirou",
+  "bugs": {
+    "url": "https://github.com/kjirou/parry/issues"
+  },
+  "dependencies": {
+    "validator": "3.30.0"
+  },
+  "devDependencies": {
+    "espower-loader": "0.10.0",
+    "fixpack": "1.2.0",
+    "intelli-espower-loader": "0.6.0",
+    "mocha": "2.1.0",
+    "power-assert": "0.10.2"
+  },
+  "homepage": "https://github.com/kjirou/parry",
+  "keywords": [
+    "validation",
+    "validate",
+    "form",
+    "field",
+    "error"
+  ],
+  "license": "https://github.com/kjirou/parry/blob/master/LICENSE",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kjirou/parry.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
