@@ -7,12 +7,14 @@
     "url": "https://github.com/kjirou/parry/issues"
   },
   "dependencies": {
+    "lodash": "3.2.0",
     "validator": "3.30.0"
   },
   "devDependencies": {
     "espower-loader": "0.10.0",
     "fixpack": "1.2.0",
     "intelli-espower-loader": "0.6.0",
+    "jshint": "2.6.0",
     "mocha": "2.1.0",
     "power-assert": "0.10.2"
   },
