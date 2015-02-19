@@ -14,5 +14,6 @@ module.exports = {
   ErrorReporter: ErrorReporter,
   //Field: Field,
   //Form: Form,
-  validatorjs: validatorjs
+  validatorjs: validatorjs,
+  validatorjsExtender: validatorjsExtender
 };
