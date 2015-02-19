@@ -10,6 +10,9 @@
     "lodash": "3.2.0",
     "validator": "3.30.0"
   },
+  "directories": {
+    "test": "test/"
+  },
   "devDependencies": {
     "espower-loader": "0.10.0",
     "fixpack": "1.2.0",
@@ -33,6 +36,7 @@
     "url": "git://github.com/kjirou/parry.git"
   },
   "scripts": {
-    "test": "mocha"
+    "lint": "jshint lib/error-reporter.js",
+    "test": "mocha && npm run lint"
   }
 }
