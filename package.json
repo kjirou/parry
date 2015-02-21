@@ -24,8 +24,7 @@
     "validation",
     "validate",
     "form",
-    "field",
-    "error"
+    "field"
   ],
   "license": "https://github.com/kjirou/parry/blob/master/LICENSE",
   "main": "index.js",
