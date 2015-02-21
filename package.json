@@ -7,6 +7,7 @@
     "url": "https://github.com/kjirou/parry/issues"
   },
   "dependencies": {
+    "async": "0.9.0",
     "lodash": "3.2.0",
     "validator": "3.30.0"
   },
@@ -14,6 +15,7 @@
     "test": "test/"
   },
   "devDependencies": {
+    "bluebird": "2.9.12",
     "espower-loader": "0.10.0",
     "fixpack": "1.2.0",
     "intelli-espower-loader": "0.6.0",
@@ -36,7 +38,7 @@
     "url": "git://github.com/kjirou/parry.git"
   },
   "scripts": {
-    "lint": "jshint ./index.js lib/error-reporter.js lib/validatorjs-extender.js",
+    "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/validatorjs-extender.js",
     "test": "mocha && npm run lint"
   }
 }

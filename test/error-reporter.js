@@ -5,7 +5,7 @@ var ErrorReporter = require('../index').ErrorReporter;
 
 describe('error-reporter module', function() {
 
-  it('should create a instance', function() {
+  it('create a instance', function() {
     var reporter = new ErrorReporter();
     assert(typeof reporter === 'object');
     assert(reporter._i18nFilter === null);
