@@ -33,7 +33,7 @@
     "url": "git://github.com/kjirou/parry.git"
   },
   "scripts": {
-    "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/validatorjs-extender.js",
+    "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/form.js lib/validatorjs-extender.js",
     "test": "mocha && npm run lint"
   }
 }
