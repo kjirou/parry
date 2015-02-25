@@ -12,45 +12,44 @@ describe('field module', function() {
     assert(field instanceof Field);
   });
 
-
   describe('type', function() {
 
     it('basic usage', function() {
-      var field = new Field();
-      field.type('isEmail', 'It is not a email');
-      assert.deepEqual(field._checks, [{
+      var SubField = Field.extend();
+      SubField.type('isEmail', 'It is not a email');
+      assert.deepEqual(SubField.checks, [{
         type: 'isEmail', args: null, message: 'It is not a email', validation: null
       }]);
     });
 
     it('use default message', function() {
-      var field = new Field();
-      field.type('isEmail');
-      assert.deepEqual(field._checks, [{
+      var SubField = Field.extend();
+      SubField.type('isEmail');
+      assert.deepEqual(SubField.checks, [{
         type: 'isEmail', args: null, message: DEFAULT_ERROR_MESSAGES.isEmail, validation: null
       }]);
     });
 
     it('set args', function() {
-      var field = new Field();
-      field.type('isLength', [8, 12], 'It is not within 8 to 12');
-      assert.deepEqual(field._checks, [{
+      var SubField = Field.extend();
+      SubField.type('isLength', [8, 12], 'It is not within 8 to 12');
+      assert.deepEqual(SubField.checks, [{
         type: 'isLength', args: [8, 12], message: 'It is not within 8 to 12', validation: null
       }]);
     });
 
     it('set non-existent type', function() {
-      var field = new Field();
+      var SubField = Field.extend();
       assert.throws(function() {
-        field.type('non_existent_type');
+        SubField.type('non_existent_type');
       }, /non_existent_type/);
     });
 
     it('method chaining', function() {
-      var field = new Field();
-      field.type('isEmail')
+      var SubField = Field.extend();
+      SubField.type('isEmail')
         .type('isLength', [8, 12]);
-      assert(field._checks.length === 2);
+      assert(SubField.checks.length === 2);
     });
   });
 
@@ -58,19 +57,19 @@ describe('field module', function() {
   describe('specify', function() {
 
     it('basic usage', function() {
-      var field = new Field();
+      var SubField = Field.extend();
       var validation = function(){ return true };
-      field.specify(validation);
-      assert.deepEqual(field._checks, [{
+      SubField.specify(validation);
+      assert.deepEqual(SubField.checks, [{
         type: null, args: null, message: null, validation: validation
       }]);
     });
 
     it('method chaining', function() {
-      var field = new Field();
-      field.specify(function(){ return true; })
+      var SubField = Field.extend();
+      SubField.specify(function(){ return true; })
         .specify(function(){ return true; });
-      assert(field._checks.length === 2);
+      assert(SubField.checks.length === 2);
     });
   });
 
@@ -149,7 +148,7 @@ describe('field module', function() {
         function(next) {
           field._validateBySpecification(validation, 'no_message', function(err, validationResult) {
             assert(validationResult.isValid === false);
-            assert.deepEqual(validationResult.errorMessages, [field.getDefaultErrorMessages().isInvalid]);
+            assert.deepEqual(validationResult.errorMessages, [DEFAULT_ERROR_MESSAGES.isInvalid]);
             next();
           });
         },
@@ -168,13 +167,14 @@ describe('field module', function() {
   describe('validate', function() {
 
     it('validate by type', function(done) {
-      var field = (new Field())
+      var SubField = Field.extend()
         .type('isEmail')
         .type('isLength', [10]);
+      var subField = new SubField();
 
       async.series([
         function(next) {
-          field.validate('foo@example.com', function(err, result) {
+          subField.validate('foo@example.com', function(err, result) {
             assert(!err);
             assert(result.isValid);
             assert.deepEqual(result.errorMessages, []);
@@ -182,7 +182,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('fooexample.com', function(err, result) {
+          subField.validate('fooexample.com', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isEmail ]);
@@ -190,7 +190,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('f@e.com', function(err, result) {
+          subField.validate('f@e.com', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isLength ]);
@@ -203,11 +203,12 @@ describe('field module', function() {
     it('shouldCheckAll option', function(done) {
       async.series([
         function(next) {
-          var field = (new Field())
+          var SubField = Field.extend()
             .type('isEmail')
             .type('isLength', [10]);
+          var subField = new SubField();
           // not isEmail and not isLength, but shouldCheckAll is false
-          field.validate('fecom', function(err, result) {
+          subField.validate('fecom', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isEmail ]);
@@ -215,10 +216,11 @@ describe('field module', function() {
           });
         },
         function(next) {
-          var field = (new Field({ shouldCheckAll: true }))
+          var SubField = Field.extend({ shouldCheckAll: true })
             .type('isEmail')
             .type('isLength', [10]);
-          field.validate('fecom', function(err, result) {
+          var subField = new SubField();
+          subField.validate('fecom', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [
@@ -232,16 +234,17 @@ describe('field module', function() {
     });
 
     it('passIfEmpty option', function(done) {
-      var field = (new Field({ passIfEmpty: true }))
+      var SubField = Field.extend({ passIfEmpty: true })
         .type('isEmail');
-      field.validate('', function(err, result) {
+      var subField = new SubField();
+      subField.validate('', function(err, result) {
         assert(result.isValid);
         done(err);
       });
     });
 
     it('validate by specification', function(done) {
-      var field = (new Field())
+      var SubField = Field.extend()
         .specify(function(input, callback) {
           if (input === 'good') {
             callback(null, { isValid: true });
@@ -249,10 +252,11 @@ describe('field module', function() {
             callback(null, { isValid: false });
           }
         });
+      var subField = new SubField();
 
       async.series([
         function(next) {
-          field.validate('good', function(err, result) {
+          subField.validate('good', function(err, result) {
             assert(!err);
             assert(result.isValid);
             assert.deepEqual(result.errorMessages, []);
@@ -260,7 +264,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('bad', function(err, result) {
+          subField.validate('bad', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isInvalid ]);
@@ -271,7 +275,7 @@ describe('field module', function() {
     });
 
     it('validate by type and specification', function(done) {
-      var field = (new Field())
+      var SubField = Field.extend()
         .type('isEmail')
         .type('isLength', [10])
         .specify(function(input, callback) {
@@ -281,10 +285,11 @@ describe('field module', function() {
             callback(null, { isValid: false, message: 'It is a custom message' });
           }
         });
+      var subField = new SubField();
 
       async.series([
         function(next) {
-          field.validate('good@example.com', function(err, result) {
+          subField.validate('good@example.com', function(err, result) {
             assert(!err);
             assert(result.isValid);
             assert.deepEqual(result.errorMessages, []);
@@ -292,7 +297,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('goodexamplecom', function(err, result) {
+          subField.validate('goodexamplecom', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isEmail ]);
@@ -300,7 +305,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('g@e.com', function(err, result) {
+          subField.validate('g@e.com', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ DEFAULT_ERROR_MESSAGES.isLength ]);
@@ -308,7 +313,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          field.validate('bad@example.com', function(err, result) {
+          subField.validate('bad@example.com', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
             assert.deepEqual(result.errorMessages, [ 'It is a custom message' ]);
@@ -322,32 +327,66 @@ describe('field module', function() {
 
   describe('extend', function() {
 
-    it('basic usage', function(done) {
-      var field = new Field({ shouldCheckAll: true }).type('isEmail');
-      var field2 = new Field().type('isLength', [8, 12]);
-      var field3 = new Field().specify(function(input, callback) {
-        if (input === 'good@example.com') {
-          callback(null, { isValid: true });
-        } else {
-          callback(null, { isValid: false, message: 'Not good email' });
-        }
-      });
-      field.extend(field2, field3);
+    it('basic usage', function() {
+      assert(Field.passIfEmpty === false);
+      assert(Field.shouldCheckAll === false);
+      var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true });
+    });
+
+
+    it('merge checks', function() {
+      var SubField = Field.extend({
+          checks: [
+            { type: 'isLength', args: [4, 5], message: 'It is invalid length' },
+            {
+              validation: function(input, callback) {
+                if (input === 'good' || input === 'good1') {
+                  callback(null, { isValid: true });
+                } else {
+                  callback(null, { isValid: false });
+                }
+              }
+            }
+          ]
+        })
+        .type('isAlpha');
+
+      assert(SubField.checks.length === 3);
+
+      var subField = new SubField();
 
       async.series([
         function(next) {
-          field.validate('gecom', function(err, result) {
+          subField.validate('good', function(err, validationResult) {
+            assert(validationResult.isValid);
+            next();
+          });
+        },
+        function(next) {
+          subField.validate('goo', function(err, validationResult) {
             assert(!err);
-            assert(result.isValid === false);
-            assert.deepEqual(result.errorMessages, [
-              DEFAULT_ERROR_MESSAGES.isEmail,
-              DEFAULT_ERROR_MESSAGES.isLength,
-              'Not good email'
-            ]);
+            assert(validationResult.isValid === false);
+            assert.deepEqual(validationResult.errorMessages, [ 'It is invalid length' ]);
+            next();
+          });
+        },
+        function(next) {
+          subField.validate('gooo', function(err, validationResult) {
+            assert(!err);
+            assert(validationResult.isValid === false);
+            assert.deepEqual(validationResult.errorMessages, [ DEFAULT_ERROR_MESSAGES.isInvalid ]);
+            next();
+          });
+        },
+        function(next) {
+          subField.validate('good1', function(err, validationResult) {
+            assert(!err);
+            assert(validationResult.isValid === false);
+            assert.deepEqual(validationResult.errorMessages, [ DEFAULT_ERROR_MESSAGES.isAlpha ]);
             next();
           });
         }
-      ], done);
+      ]);
     });
   });
 });
