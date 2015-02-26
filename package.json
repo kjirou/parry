@@ -13,11 +13,13 @@
   },
   "devDependencies": {
     "bluebird": "2.9.12",
+    "browserify": "9.0.3",
     "espower-loader": "0.10.0",
     "fixpack": "1.2.0",
     "jshint": "2.6.0",
     "mocha": "2.1.0",
-    "power-assert": "0.10.2"
+    "power-assert": "0.10.2",
+    "testem": "0.7.1"
   },
   "homepage": "https://github.com/kjirou/parry",
   "keywords": [
@@ -33,7 +35,11 @@
     "url": "git://github.com/kjirou/parry.git"
   },
   "scripts": {
+    "browser-ci-test": "testem ci -l phantomjs",
+    "browser-test": "testem",
+    "build": "browserify public/tests.js > public/bundle.js",
     "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/form.js lib/validatorjs-extender.js",
+    "start": "http-server",
     "test": "mocha && npm run lint"
   }
 }

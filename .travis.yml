@@ -8,6 +8,8 @@ node_js:
 script:
   - mongo --version
   - npm run test
+  - npm run build
+  - npm run browser-ci-test
 
 branches:
   except:
