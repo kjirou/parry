@@ -1,7 +1,7 @@
 {
   "name": "parry",
   "description": "A loose coupling and structural Node.js validation module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "kjirou",
   "bugs": {
     "url": "https://github.com/kjirou/parry/issues"
