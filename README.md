@@ -70,7 +70,6 @@ You can set the following typical validations.
 - [validator.js](https://github.com/chriso/validator.js) validators
 - [And own extensions](https://github.com/kjirou/parry/blob/master/lib/validatorjs-extender.js)
 
-Example:
 ```
 var SubField = Field.extend();
   .type('isEmail');
@@ -81,7 +80,6 @@ var SubField = Field.extend();
 ### Field.specify
 Use it, in the case of complex validation.
 
-Example:
 ```
 var SubField = Field.extend()
   .specify(function(input, callback) {
@@ -101,7 +99,6 @@ Pass validation if value is empty.
 
 Default: `false`
 
-Example:
 ```
 var SubField = Field.extend({ passIfEmpty: true });
 ```
@@ -111,7 +108,6 @@ Check all validators already even if error occurs.
 
 Default: `false`
 
-Example:
 ```
 var SubField = Field.extend({ shouldCheckAll: true });
 ```
@@ -119,10 +115,58 @@ var SubField = Field.extend({ shouldCheckAll: true });
 ### Field.extend
 Create sub class.
 
-Example:
 ```
 var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true })
   .type('isEmail')
   .type('isLength', [4, 64])
 ;
 ```
+
+### Field.prototype.validate
+Validate with input.
+
+
+## Form
+### Form.shouldCheckAll
+Check all fields already even if error occurs
+
+Default: `true`
+
+```
+var SubForm = Form.extend({ shouldCheckAll: true });
+```
+
+### Form.prototype.input
+Input a value.
+
+```
+form.input('email', 'foo@example.com');
+```
+
+### Form.prototype.inputs
+Input values.
+
+```
+form.inputs({
+  email: 'foo@example.com',
+  username: 'foo'
+});
+```
+
+Or,
+```
+var form = new SubForm({
+  email: 'foo@example.com',
+  username: 'foo'
+});
+```
+
+### Form.prototype.validate
+Validate fields with inputs.
+Please see [Usage](#usage).
+
+
+## ErrorReporter
+
+
+## DEFAULT_ERROR_MESSAGES
