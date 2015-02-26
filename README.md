@@ -12,7 +12,6 @@ This module will protect your application from invalid inputs!
 var Field = require('parry').Field;
 var Form = require('parry').Form;
 
-// Define fields
 var UsernameField = Field.extend()
   .type('matches', /[-_a-z0-9]/i)
   .type('isLength', [4, 16])
@@ -25,7 +24,6 @@ var GenderField = Field.extend({ passIfEmpty: true })
   .type('isIn', ['male', 'female'])
 ;
 
-// Define form
 var UserForm = Form.extend()
   .field('username', UsernameField)
   .field('password', PasswordField)
@@ -34,12 +32,21 @@ var UserForm = Form.extend()
 
 // Validate inputs
 var inputs = {
-  username: 'my-username',
-  password: 'abcd1234',
-  gender: ''
+  username: 'my-username@',
+  password: 'abcd123',
+  gender: 'man'
 };
 var userForm = new UserForm(inputs);
 userForm.validate(function(err, validationResult) {
   console.log(validationResult);
+  // -> {
+  //   isValid: false,
+  //   errors: {
+  //     username: [ 'Not matched' ],
+  //     password: [ 'String is not in range' ],
+  //     gender: [ 'Unexpected value' ]
+  //   },
+  //   reporter: {ErrorReporter}
+  // }
 });
 ```
