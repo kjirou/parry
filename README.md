@@ -10,6 +10,14 @@ This module will protect your application from invalid inputs!
 ![](https://36.media.tumblr.com/fc04bd715990b22b98916ea6b3ec1b5a/tumblr_nk146q9c7i1qzgre3o1_250.jpg)
 
 
+## Installation
+```
+npm install parry
+```
+
+Or, you can use in browser through the [browserify](https://github.com/substack/node-browserify).
+
+
 ## Usage
 ```
 var Field = require('parry').Field;
@@ -49,16 +57,72 @@ userForm.validate(function(err, validationResult) {
   //     password: [ 'String is not in range' ],
   //     gender: [ 'Unexpected value' ]
   //   },
-  //   reporter: {ErrorReporter}
+  //   reporter: { ErrorReporter instance }
   // }
 });
 ```
 
 
-## Installation
+## Field
+### Field.type
+You can set the following typical validations.
 
+- [validator.js](https://github.com/chriso/validator.js) validators
+- [And own extensions](https://github.com/kjirou/parry/blob/master/lib/validatorjs-extender.js)
+
+Example:
 ```
-npm install parry
+var SubField = Field.extend();
+  .type('isEmail');
+  .type('isLength', [4, 64])
+;
 ```
 
-Or, you can use in browser through the [browserify](https://github.com/substack/node-browserify).
+### Field.specify
+Use it, in the case of complex validation.
+
+Example:
+```
+var SubField = Field.extend()
+  .specify(function(input, callback) {
+    if (input === 'good') {
+      callback(null, { isValid: true });
+    } else {
+      callback(null, { isValid: false, message: 'It is a not good input' });
+    }
+    // error handling:
+    // callback(new Error('Runtime Error'));
+  })
+;
+```
+
+### Field.passIfEmpty
+Pass validation if value is empty.
+
+Default: `false`
+
+Example:
+```
+var SubField = Field.extend({ passIfEmpty: true });
+```
+
+### Field.shouldCheckAll
+Check all validators already even if error occurs.
+
+Default: `false`
+
+Example:
+```
+var SubField = Field.extend({ shouldCheckAll: true });
+```
+
+### Field.extend
+Create sub class.
+
+Example:
+```
+var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true })
+  .type('isEmail')
+  .type('isLength', [4, 64])
+;
+```
