@@ -10,62 +10,75 @@ var DEFAULT_ERROR_MESSAGES = require('../index').DEFAULT_ERROR_MESSAGES;
 
 describe('form module', function() {
 
+  var UsernameField = Field.extend()
+    .type('matches', /[a-z0-9_]+/)
+    .type('isLength', [4, 16]);
+
+  var PasswordField = Field.extend()
+    .type('isAlphanumeric')
+    .type('isLength', [8, 16]);
+
+  var EmailField = Field.extend()
+    .type('isEmail')
+    .type('isLength', [8, 16]);
+
+
   it('create a instance', function() {
     var form = new Form();
     assert(form instanceof Form);
   });
 
   it('field', function() {
-    var form = new Form()
-      .field('foo', new Field())
-      .field('bar', new Field());
-    assert(form._fields.length === 2);
+    var UserForm = Form.extend()
+      .field('username', UsernameField)
+      .field('password', PasswordField);
+    assert(UserForm.fields.length === 2);
     assert.throws(function() {
-      form.field('foo', new Field());
-    }, /foo/);
+      UserForm.field('username', Field);
+    }, /username/);
   });
 
   it('getField, getFieldOrError', function() {
-    var form = new Form()
-      .field('foo', new Field());
-    assert(form.getField('foo'));
-    assert(form.getField('bar') === null);
-    assert(form.getFieldOrError('foo'));
+    var UserForm = Form.extend()
+      .field('username', UsernameField);
+    assert(UserForm.getField('username'));
+    assert(UserForm.getField('usernamex') === null);
+    assert(UserForm.getFieldOrError('username'));
     assert.throws(function() {
-      form.getFieldOrError('bar');
-    }, /bar/);
+      UserForm.getFieldOrError('usernamex');
+    }, /usernamex/);
   });
 
   it('input', function() {
-    var form = new Form()
-      .input('foo', 'foo_input')
-      .input('bar', 'bar_input');
+    var form = new (Form.extend())()
+      .input('foo', 'xxx')
+      .input('bar', 'yyy');
     assert.deepEqual(form._inputs, {
-      foo: 'foo_input',
-      bar: 'bar_input'
+      foo: 'xxx',
+      bar: 'yyy'
     });
   });
 
   it('inputs', function() {
-    var form = new Form();
-    form.inputs({
-      foo: 'foo_input',
-      bar: 'bar_input'
-    });
+    var form = new (Form.extend())()
+      .inputs({
+        foo: 'xxx',
+        bar: 'yyy'
+      });
     assert.deepEqual(form._inputs, {
-      foo: 'foo_input',
-      bar: 'bar_input'
+      foo: 'xxx',
+      bar: 'yyy'
     });
   });
 
   it('set inputs by constructor', function() {
-    var form = new Form({
-      foo: 'foo_input',
-      bar: 'bar_input'
+    var form = new (Form.extend())({
+      foo: 'xxx',
+      bar: 'yyy'
     });
     assert.deepEqual(form._inputs, {
-      foo: 'foo_input',
-      bar: 'bar_input'
+      foo: 'xxx',
+      bar: 'yyy'
     });
   });
 
@@ -73,21 +86,16 @@ describe('form module', function() {
   describe('validate', function() {
 
     it('basic usage', function(done) {
-      var emailField = new Field()
-        .type('isEmail');
-      var passwordField = new Field()
-        .type('isAlphanumeric')
-        .type('isLength', [8, 16]);
-
       async.series([
         // valid inputs
         function(next) {
-          var form = new Form({
-              email: 'foo@example.com',
-              password: 'abcd1234'
-            })
-            .field('email', emailField)
-            .field('password', passwordField);
+          var UserForm = Form.extend()
+            .field('email', EmailField)
+            .field('password', PasswordField);
+          var form = new UserForm({
+            email: 'foo@example.com',
+            password: 'abcd1234'
+          });
           form.validate(function(err, validationResult) {
             assert(validationResult.isValid);
             assert(validationResult.reporter instanceof ErrorReporter);
@@ -97,12 +105,13 @@ describe('form module', function() {
         },
         // invalid inputs
         function(next) {
-          var form = new Form({
-              email: 'fooexamplecom',
-              password: '_abcd1234'
-            })
-            .field('email', emailField)
-            .field('password', passwordField);
+          var UserForm = Form.extend()
+            .field('email', EmailField)
+            .field('password', PasswordField);
+          var form = new UserForm({
+            email: 'fooexamplecom',
+            password: '_abcd1234'
+          });
           form.validate(function(err, validationResult) {
             assert(!validationResult.isValid);
             assert(validationResult.reporter instanceof ErrorReporter);
@@ -112,13 +121,12 @@ describe('form module', function() {
         },
         // shouldCheckAll option
         function(next) {
-          var form = new Form({
-              email: 'foo@example.com'
-            }, {
-              shouldCheckAll: false
-            })
-            .field('email', emailField)
-            .field('password', passwordField);
+          var UserForm = Form.extend({ shouldCheckAll: false })
+            .field('email', EmailField)
+            .field('password', PasswordField);
+          var form = new UserForm({
+            email: 'foo@example.com'
+          });
           form.validate(function(err, validationResult) {
             assert(validationResult.isValid);
             assert(validationResult.reporter instanceof ErrorReporter);
@@ -127,6 +135,23 @@ describe('form module', function() {
           });
         }
       ], done);
+    });
+  });
+
+
+  describe('extend', function() {
+
+    it('basic usage', function() {
+      var SubForm = Form.extend()
+        .field('username', UsernameField);
+      var SubSubForm = SubForm.extend()
+        .field('password', PasswordField);
+      var form = new SubSubForm();
+      assert(form._fields.length === 2);
+      assert(form._fields[0].fieldId === 'username');
+      assert(form._fields[0].field instanceof UsernameField);
+      assert(form._fields[1].fieldId === 'password');
+      assert(form._fields[1].field instanceof PasswordField);
     });
   });
 });
