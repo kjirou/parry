@@ -61,4 +61,4 @@ userForm.validate(function(err, validationResult) {
 npm install parry
 ```
 
-In the case of a browser, you can use through the [browserify](https://github.com/substack/node-browserify).
+Or, you can use in browser through the [browserify](https://github.com/substack/node-browserify).
