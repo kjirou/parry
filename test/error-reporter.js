@@ -20,11 +20,11 @@ describe('error-reporter module', function() {
     reporter.error('foo', 'Required foo');
     assert.deepEqual(reporter.report(), {
       foo: [
-        { key: 'foo', message: 'Invalid foo' },
-        { key: 'foo', message: 'Required foo' }
+        'Invalid foo',
+        'Required foo'
       ],
       bar: [
-        { key: 'bar', message: 'Invalid bar' }
+        'Invalid bar'
       ]
     });
   });
@@ -38,11 +38,11 @@ describe('error-reporter module', function() {
     r1.merge(r2);
     assert.deepEqual(r1.report(), {
       foo: [
-        { key: 'foo', message: 'Invalid foo' },
-        { key: 'foo', message: 'Required foo' }
+        'Invalid foo',
+        'Required foo'
       ],
       bar: [
-        { key: 'bar', message: 'Invalid bar' }
+        'Invalid bar'
       ]
     });
   });
@@ -54,10 +54,7 @@ describe('error-reporter module', function() {
       return message.toUpperCase();
     });
     assert.deepEqual(reporter.report(), {
-      foo: [{
-        key: 'foo',
-        message: 'INVALID FOO'
-      }]
+      foo: ['INVALID FOO']
     });
 
     // set by constructor
@@ -68,10 +65,7 @@ describe('error-reporter module', function() {
     });
     reporter.error('foo', 'Invalid foo');
     assert.deepEqual(reporter.report(), {
-      foo: [{
-        key: 'foo',
-        message: 'invalid foo'
-      }]
+      foo: ['invalid foo']
     });
   });
 
