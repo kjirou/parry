@@ -1,4 +1,7 @@
-# parry [![npm version](https://badge.fury.io/js/parry.svg)](http://badge.fury.io/js/parry)
+# parry
+
+[![npm version](https://badge.fury.io/js/parry.svg)](http://badge.fury.io/js/parry)
+[![Build Status](https://travis-ci.org/kjirou/parry.svg?branch=master)](https://travis-ci.org/kjirou/parry)
 
 A loose coupling and structural Node.js validation module.
 
@@ -50,3 +53,12 @@ userForm.validate(function(err, validationResult) {
   // }
 });
 ```
+
+
+## Installation
+
+```
+npm install parry
+```
+
+In the case of a browser, you can use through the [browserify](https://github.com/substack/node-browserify).
