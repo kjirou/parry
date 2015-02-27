@@ -21,6 +21,15 @@
     "power-assert": "0.10.2",
     "testem": "0.7.1"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "examples",
+    "index.js",
+    "lib",
+    "package.json",
+    "test"
+  ],
   "homepage": "https://github.com/kjirou/parry",
   "keywords": [
     "validation",
