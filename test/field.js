@@ -22,14 +22,6 @@ describe('field module', function() {
       }]);
     });
 
-    it('use default message', function() {
-      var SubField = Field.extend();
-      SubField.type('isEmail');
-      assert.deepEqual(SubField.validations, [{
-        type: 'isEmail', args: null, message: DEFAULT_ERROR_MESSAGES.isEmail, specification: null
-      }]);
-    });
-
     it('set args', function() {
       var SubField = Field.extend();
       SubField.type('isLength', [8, 12], 'It is not within 8 to 12');
@@ -77,89 +69,201 @@ describe('field module', function() {
   describe('_validateByType', function() {
 
     it('basic usage', function() {
-      var field = new Field();
-      assert(field._validateByType('isEmail', [], 'foo@example.com'));
-      assert(field._validateByType('isEmail', [], 'fooexamplecom') === false);
-      assert(field._validateByType('isLength', [4, 8], '1234'));
-      assert(field._validateByType('isLength', [4, 8], '123') === false);
-      assert(field._validateByType('isLength', [4, 8], '123456789') === false);
-      assert(field._validateByType('isLength', [4], '123456789'));
+      assert(Field._validateByType('isEmail', [], 'foo@example.com'));
+      assert(Field._validateByType('isEmail', [], 'fooexamplecom') === false);
+      assert(Field._validateByType('isLength', [4, 8], '1234'));
+      assert(Field._validateByType('isLength', [4, 8], '123') === false);
+      assert(Field._validateByType('isLength', [4, 8], '123456789') === false);
+      assert(Field._validateByType('isLength', [4], '123456789'));
     });
 
     it('use non-existent type', function() {
-      var field = new Field();
       assert.throws(function() {
-        field._validateByType('non_existent_type');
+        Field._validateByType('non_existent_type');
       }, /non_existent_type/);
     });
   });
 
 
-  describe('_validateBySpecification', function() {
+  describe('createActualValidation', function() {
 
-    it('basic usage', function(done) {
-      var specification = function(input, callback) {
-        if (input === 'good') {
-          return callback(null, {
-            isValid: true
-          });
-        } else if (input === 'bad') {
-          return callback(null, {
-            isValid: false,
-            message: 'bad input'
-          });
-        } else if (input === 'evil') {
-          return callback(null, {
-            isValid: false,
-            messages: ['evil input', 'evil input']
-          });
-        } else if (input === 'no_message') {
-          return callback(null, {
-            isValid: false
-          });
-        } else {
-          return callback(new Error('runtime error'));
-        }
-      };
-      var field = new Field();
+    describe('by type', function() {
 
-      async.series([
-        function(next) {
-          field._validateBySpecification(specification, 'good', function(err, validationResult) {
-            assert(validationResult.isValid);
-            assert.deepEqual(validationResult.errorMessages, []);
-            next();
-          });
-        },
-        function(next) {
-          field._validateBySpecification(specification, 'bad', function(err, validationResult) {
-            assert(validationResult.isValid === false);
-            assert.deepEqual(validationResult.errorMessages, ['bad input']);
-            next();
-          });
-        },
-        function(next) {
-          field._validateBySpecification(specification, 'evil', function(err, validationResult) {
-            assert(validationResult.isValid === false);
-            assert.deepEqual(validationResult.errorMessages, ['evil input', 'evil input']);
-            next();
-          });
-        },
-        function(next) {
-          field._validateBySpecification(specification, 'no_message', function(err, validationResult) {
-            assert(validationResult.isValid === false);
-            assert.deepEqual(validationResult.errorMessages, [DEFAULT_ERROR_MESSAGES.isInvalid]);
-            next();
-          });
-        },
-        function(next) {
-          field._validateBySpecification(specification, 'foo', function(err, validationResult) {
-            assert(err);
-            assert(!!validationResult === false);
-            next();
-          });
-        }
-      ], done);
+      it('basic usage', function(done) {
+        var SubField = Field.extend()
+          .type('isLength', [4, 8], 'Not in range');
+        async.series([
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('aaaa', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('aaa', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, ['Not in range']);
+              next();
+            });
+          }
+        ], done);
+      });
+
+      it('use default error message', function(done) {
+        var SubField = Field.extend()
+          .type('isEmail');
+        async.series([
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('foo@example.com', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('fooexamplecom', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, [DEFAULT_ERROR_MESSAGES.isEmail]);
+              next();
+            });
+          }
+        ], done);
+      });
+
+      it('passIfEmpty', function(done) {
+        var SubField = Field.extend({ passIfEmpty: true })
+          .type('isEmail');
+        async.series([
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('foo@example.com', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('fooexamplecom', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, [DEFAULT_ERROR_MESSAGES.isEmail]);
+              next();
+            });
+          }
+        ], done);
+      });
+    });
+
+    describe('by specification', function() {
+
+      it('basic usage', function(done) {
+        var specification = function(input, callback) {
+          if (input === 'good') {
+            return callback(null, {
+              isValid: true
+            });
+          } else if (input === 'bad') {
+            return callback(null, {
+              isValid: false,
+              errorMessages: ['bad input', 'bad input']
+            });
+          } else if (input === 'use_prepared_message') {
+            return callback(null, {
+              isValid: false
+            });
+          } else {
+            return callback(new Error('runtime error'));
+          }
+        };
+        var SubField = Field.extend()
+          .specify(specification, 'Invalid input');
+        async.series([
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('good', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('bad', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, ['bad input', 'bad input']);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('use_prepared_message', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, ['Invalid input']);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('error', function(err, validationResult) {
+              assert(err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          }
+        ], done);
+      });
+
+      it('passIfEmpty', function(done) {
+        var specification = function(input, callback) {
+          callback(null, { isValid: false });
+        };
+        var SubField = Field.extend({ passIfEmpty: true })
+          .specify(specification);
+        async.series([
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid);
+              assert.deepEqual(validationResult.errorMessages, []);
+              next();
+            });
+          },
+          function(next) {
+            var actualValidation = SubField.createActualValidation(SubField.validations[0]);
+            actualValidation('bad', function(err, validationResult) {
+              assert(!err);
+              assert(validationResult.isValid === false);
+              assert.deepEqual(validationResult.errorMessages, [ DEFAULT_ERROR_MESSAGES.isInvalid ]);
+              next();
+            });
+          },
+        ], done);
+      });
     });
   });
 
@@ -282,7 +386,7 @@ describe('field module', function() {
           if (input === 'good@example.com') {
             callback(null, { isValid: true });
           } else {
-            callback(null, { isValid: false, message: 'It is a custom message' });
+            callback(null, { isValid: false, errorMessages: ['It is a custom message'] });
           }
         });
       var subField = new SubField();

@@ -85,12 +85,13 @@ var SubField = Field.extend()
   .specify(function(input, callback) {
     if (input === 'good') {
       callback(null, { isValid: true });
+    } else if (input === 'bad') {
+      callback(null, { isValid: false, errorMessages: ['It is a bad input'] });
     } else {
-      callback(null, { isValid: false, message: 'It is a not good input' });
+      // Error message is 'It is a not good input'
+      callback(null, { isValid: false });
     }
-    // error handling:
-    // callback(new Error('Runtime Error'));
-  })
+  }, 'It is a not good input')
 ;
 ```
 
