@@ -1,6 +1,6 @@
 {
   "name": "parry",
-  "description": "A loose coupling and structural Node.js validation module",
+  "description": "A structural Node.js validation module",
   "version": "1.0.0",
   "author": "kjirou",
   "bugs": {

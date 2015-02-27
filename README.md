@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/parry.svg)](http://badge.fury.io/js/parry)
 [![Build Status](https://travis-ci.org/kjirou/parry.svg?branch=master)](https://travis-ci.org/kjirou/parry)
 
-A loose coupling and structural Node.js validation module.
+A structural Node.js validation module.
 
 This module will protect your application from invalid inputs!
 
@@ -116,10 +116,7 @@ var SubField = Field.extend({ shouldCheckAll: true });
 Create sub class.
 
 ```
-var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true })
-  .type('isEmail')
-  .type('isLength', [4, 64])
-;
+var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true });
 ```
 
 ### Field.prototype.validate
@@ -127,6 +124,18 @@ Validate with input.
 
 
 ## Form
+### Form.field
+Set Field sub class with id.
+
+Please see [Usage](#usage).
+
+### Form.extend
+Create sub class.
+
+```
+var SubForm = Field.extend({ shouldCheckAll: true });
+```
+
 ### Form.shouldCheckAll
 Check all fields already even if error occurs
 
@@ -163,6 +172,7 @@ var form = new SubForm({
 
 ### Form.prototype.validate
 Validate fields with inputs.
+
 Please see [Usage](#usage).
 
 
