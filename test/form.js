@@ -119,9 +119,9 @@ describe('form module', function() {
             next();
           });
         },
-        // shouldCheckAll option
+        // shouldValidateAll option
         function(next) {
-          var UserForm = Form.extend({ shouldCheckAll: false })
+          var UserForm = Form.extend({ shouldValidateAll: false })
             .field('email', EmailField)
             .field('password', PasswordField);
           var form = new UserForm({

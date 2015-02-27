@@ -103,20 +103,20 @@ Default: `false`
 var SubField = Field.extend({ passIfEmpty: true });
 ```
 
-### Field.shouldCheckAll
-Check all validators already even if error occurs.
+### Field.shouldValidateAll
+Validate all validators already even if error occurs.
 
 Default: `false`
 
 ```
-var SubField = Field.extend({ shouldCheckAll: true });
+var SubField = Field.extend({ shouldValidateAll: true });
 ```
 
 ### Field.extend
 Create sub class.
 
 ```
-var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true });
+var SubField = Field.extend({ passIfEmpty: true, shouldValidateAll: true });
 ```
 
 ### Field.prototype.validate
@@ -133,16 +133,16 @@ Please see [Usage](#usage).
 Create sub class.
 
 ```
-var SubForm = Field.extend({ shouldCheckAll: true });
+var SubForm = Field.extend({ shouldValidateAll: true });
 ```
 
-### Form.shouldCheckAll
-Check all fields already even if error occurs
+### Form.shouldValidateAll
+Validate all fields already even if error occurs
 
 Default: `true`
 
 ```
-var SubForm = Form.extend({ shouldCheckAll: true });
+var SubForm = Form.extend({ shouldValidateAll: true });
 ```
 
 ### Form.prototype.input

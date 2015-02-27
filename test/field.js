@@ -200,14 +200,14 @@ describe('field module', function() {
       ], done);
     });
 
-    it('shouldCheckAll option', function(done) {
+    it('shouldValidateAll option', function(done) {
       async.series([
         function(next) {
           var SubField = Field.extend()
             .type('isEmail')
             .type('isLength', [10]);
           var subField = new SubField();
-          // not isEmail and not isLength, but shouldCheckAll is false
+          // not isEmail and not isLength, but shouldValidateAll is false
           subField.validate('fecom', function(err, result) {
             assert(!err);
             assert(result.isValid === false);
@@ -216,7 +216,7 @@ describe('field module', function() {
           });
         },
         function(next) {
-          var SubField = Field.extend({ shouldCheckAll: true })
+          var SubField = Field.extend({ shouldValidateAll: true })
             .type('isEmail')
             .type('isLength', [10]);
           var subField = new SubField();
@@ -329,8 +329,8 @@ describe('field module', function() {
 
     it('basic usage', function() {
       assert(Field.passIfEmpty === false);
-      assert(Field.shouldCheckAll === false);
-      var SubField = Field.extend({ passIfEmpty: true, shouldCheckAll: true });
+      assert(Field.shouldValidateAll === false);
+      var SubField = Field.extend({ passIfEmpty: true, shouldValidateAll: true });
     });
 
 
