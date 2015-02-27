@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "async": "0.9.0",
+    "bluebird": "2.9.12",
     "lodash": "3.2.0",
     "validator": "3.30.0"
   },
   "devDependencies": {
-    "bluebird": "2.9.12",
     "browserify": "9.0.3",
     "espower-loader": "0.10.0",
     "fixpack": "1.2.0",
@@ -47,7 +47,7 @@
     "browser-ci-test": "testem ci -l phantomjs",
     "browser-test": "testem",
     "build": "browserify public/tests.js > public/bundle.js",
-    "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/form.js lib/validatorjs-extender.js",
+    "lint": "jshint index.js lib/deferred.js lib/error-reporter.js lib/field.js lib/form.js lib/validatorjs-extender.js",
     "test": "mocha && npm run lint"
   }
 }

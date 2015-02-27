@@ -1,4 +1,5 @@
 var async = require('async');
+var Promise = require('bluebird');
 var assert = require('power-assert');
 
 var Field = require('../index').Field;
@@ -491,6 +492,38 @@ describe('field module', function() {
           });
         }
       ]);
+    });
+  });
+
+
+  describe('Promise', function() {
+
+    it('validate returns promise', function() {
+      var SubField = Field.extend()
+        .specify(function(input, callback) {
+          if (input === 'good') {
+            callback(null, { isValid: true });
+          } else if (input === 'bad') {
+            callback(null, { isValid: false });
+          } else {
+            callback(new Error('Runtime error'));
+          }
+        });
+      return Promise.resolve().then(function() {
+        return (new SubField()).validate('good').then(function(validationResult) {
+          assert(validationResult.isValid);
+          assert.deepEqual(validationResult.errorMessages, []);
+        });
+      }).then(function() {
+        return (new SubField()).validate('bad').then(function(validationResult) {
+          assert(validationResult.isValid === false);
+          assert.deepEqual(validationResult.errorMessages, [ DEFAULT_ERROR_MESSAGES.isInvalid ]);
+        });
+      }).then(function() {
+        return (new SubField()).validate('error').catch(function(err) {
+          assert(err && err.message === 'Runtime error');
+        });
+      });
     });
   });
 });

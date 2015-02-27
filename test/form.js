@@ -1,4 +1,5 @@
 var async = require('async');
+var Promise = require('bluebird');
 var _ = require('lodash');
 var assert = require('power-assert');
 
@@ -152,6 +153,37 @@ describe('form module', function() {
       assert(form._fields[0].field instanceof UsernameField);
       assert(form._fields[1].fieldId === 'password');
       assert(form._fields[1].field instanceof PasswordField);
+    });
+  });
+
+
+  describe('Promise', function() {
+
+    it('validate returns promise', function() {
+      var SubForm = Form.extend()
+        .field('username', UsernameField)
+        .field(
+          'foo',
+          Field.extend().specify(function(input, callback) {
+            if (input !== 'foo') {
+              return callback(new Error('Runtime error'));
+            }
+            callback(null, { isValid: true });
+          })
+        );
+      return Promise.resolve().then(function() {
+        return (new SubForm({ username: 'aaaa', foo: 'foo' })).validate().then(function(validationResult) {
+          assert(validationResult.isValid);
+        });
+      }).then(function() {
+        return (new SubForm({ username: 'aaa', foo: 'foo' })).validate().then(function(validationResult) {
+          assert(validationResult.isValid === false);
+        });
+      }).then(function() {
+        return (new SubForm({ username: 'aaaa' })).validate().catch(function(err) {
+          assert(err && err.message === 'Runtime error');
+        });
+      });
     });
   });
 });

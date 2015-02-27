@@ -123,6 +123,16 @@ var SubField = Field.extend({ passIfEmpty: true, shouldValidateAll: true });
 ### Field.prototype.validate
 Validate with input.
 
+```
+field.validate('your input', function(err, { isValid, errorMessages }) {
+});
+```
+
+Or, if you use promise:
+```
+field.validate('your input').then(..);
+```
+
 
 ## Form
 ### Form.field
@@ -175,6 +185,11 @@ var form = new SubForm({
 Validate fields with inputs.
 
 Please see [Usage](#usage).
+
+Or, if you use promise:
+```
+form.validate().then(..);
+```
 
 
 ## ErrorReporter
