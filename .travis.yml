@@ -6,7 +6,6 @@ node_js:
   - "0.12"
 
 script:
-  - mongo --version
   - npm run test
   - npm run build
   - npm run browser-ci-test
