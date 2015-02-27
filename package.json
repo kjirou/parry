@@ -39,7 +39,6 @@
     "browser-test": "testem",
     "build": "browserify public/tests.js > public/bundle.js",
     "lint": "jshint ./index.js lib/error-reporter.js lib/field.js lib/form.js lib/validatorjs-extender.js",
-    "start": "http-server",
     "test": "mocha && npm run lint"
   }
 }
