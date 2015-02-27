@@ -498,7 +498,7 @@ describe('field module', function() {
 
   describe('Promise', function() {
 
-    it('validate return promise', function() {
+    it('validate returns promise', function() {
       var SubField = Field.extend()
         .specify(function(input, callback) {
           if (input === 'good') {
